@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../app/store/slices/authSlice';
 import AuthModal from '../components/auth/AuthModal';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -12,7 +13,8 @@ const Navbar = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-
+  const path = usePathname();
+  const isHomePage = path === '/';
   // Calculate total items in cart
   const cartItemsCount = items.reduce(
     (total, item) => total + item.quantity,
@@ -35,7 +37,11 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className='fixed z-50 w-full bg-white md:absolute md:bg-transparent'>
+      <nav
+        className={`${
+          !isHomePage ? 'border-b-2' : ''
+        } fixed z-50 w-full bg-white md:absolute md:bg-transparent `}
+      >
         <div className='container m-auto px-2 md:px-12 lg:px-7'>
           <div className='flex flex-wrap items-center justify-between py-3 gap-6 md:py-4 md:gap-0'>
             <input
@@ -135,6 +141,7 @@ const Navbar = () => {
                       >
                         Profile
                       </Link>
+
                       <button
                         onClick={handleLogout}
                         className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100'

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-// load cart from local storage
 
+// load cart from local storage
 const loadCartFromLocalStorage = () => {
   if (typeof window !== 'undefined') {
     const cart = localStorage.getItem('cart');
@@ -38,7 +38,7 @@ const cartSlice = createSlice({
       // Save cart to local storage
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
-    updateQuantitiy: (state, action) => {
+    updateQuantity(state, action) {
       const { idMeal, quantity } = action.payload;
       const item = state.items.find((item) => item.idMeal === idMeal);
       if (item) {
@@ -47,7 +47,7 @@ const cartSlice = createSlice({
         localStorage.setItem('cart', JSON.stringify(state.items));
       }
     },
-    clearCart: (state) => {
+    clearCart(state) {
       state.items = [];
       // Save cart to local storage
       localStorage.setItem('cart', JSON.stringify(state.items));
@@ -55,6 +55,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantitiy, clearCart } =
+export const { addToCart, removeFromCart, updateQuantity, clearCart } =
   cartSlice.actions;
 export default cartSlice.reducer;
