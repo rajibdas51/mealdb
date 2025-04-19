@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import RecipeCard from '../../components/Recipes/RecipeCard';
 import Pagination from '../../components/Pagination';
 import HttpKit from '../../common/helpers/HttpKit';
+import Modal from '@/components/Modal';
+import SingleRecipe from '@/components/Recipes/SingleRecipe';
 
 const commonIngredients = [
   'Chicken',
@@ -29,7 +31,8 @@ const AllRecipes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [openDetails, setOpenDetails] = useState(false);
+  const [recipeId, setRecipeId] = useState('');
   const recipesPerPage = 12;
 
   const fetchInitialData = async () => {
@@ -118,6 +121,11 @@ const AllRecipes = () => {
     (currentPage - 1) * recipesPerPage,
     currentPage * recipesPerPage
   );
+
+  const handleDetailsOpen = (id) => {
+    setOpenDetails(true);
+    setRecipeId(id);
+  };
 
   const renderStatus = () => {
     if (loading) {
@@ -231,9 +239,7 @@ const AllRecipes = () => {
               <RecipeCard
                 key={recipe.idMeal}
                 recipe={recipe}
-                handleDetailsOpen={() =>
-                  console.log(`Opening recipe details for: ${recipe.idMeal}`)
-                }
+                handleDetailsOpen={handleDetailsOpen}
               />
             ))}
           </div>
@@ -245,6 +251,12 @@ const AllRecipes = () => {
           />
         </>
       )}
+
+      {/* Recipe Details Modal */}
+
+      <Modal isOpen={openDetails} setIsOpen={setOpenDetails}>
+        <SingleRecipe id={recipeId} setIsOpen={setOpenDetails} />
+      </Modal>
     </div>
   );
 };

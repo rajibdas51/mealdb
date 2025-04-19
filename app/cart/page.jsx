@@ -1,20 +1,34 @@
 'use client';
 
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   removeFromCart,
   updateQuantity,
   clearCart,
 } from '../store/slices/cartSlice';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import useHasMounted from '@/hooks/useHasMounted';
+import Pagination from '@/components/Pagination';
 
 export default function Cart() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const hasMounted = useHasMounted();
+
+  // — Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+
+  // — Items for this page
+  const paginatedItems = items.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // — Handlers
   const handleRemoveItem = (idMeal) => {
     dispatch(removeFromCart(idMeal));
   };
@@ -28,17 +42,16 @@ export default function Cart() {
     dispatch(clearCart());
   };
 
-  // Calculate cart total
+  // — Cart total (assumes $10 per item)
   const cartTotal = items
-    .reduce((total, item) => total + 10 * item.quantity, 0)
+    .reduce((sum, item) => sum + 10 * item.quantity, 0)
     .toFixed(2);
 
-  if (!hasMounted) {
-    return null; // Prevent rendering until mounted
-  }
+  if (!hasMounted) return null;
+
   return (
     <div className='bg-gray-50 min-h-screen'>
-      <div className='container mx-auto px-4 py-8 '>
+      <div className='container mx-auto px-4 py-8'>
         <h1 className='text-2xl font-bold mb-6'>Your Cart</h1>
 
         {items.length === 0 ? (
@@ -53,7 +66,7 @@ export default function Cart() {
           </div>
         ) : (
           <>
-            {/* Desktop view - table layout */}
+            {/* Desktop view */}
             <div className='hidden md:block bg-white rounded-lg shadow-md overflow-hidden mb-6'>
               <table className='w-full'>
                 <thead className='bg-gray-50'>
@@ -66,13 +79,13 @@ export default function Cart() {
                   </tr>
                 </thead>
                 <tbody className='divide-y divide-gray-200'>
-                  {items.map((item) => (
+                  {paginatedItems.map((item) => (
                     <tr key={item.idMeal}>
                       <td className='py-4 px-4'>
                         <div className='flex items-center'>
                           <Image
-                            width={100}
-                            height={100}
+                            width={80}
+                            height={80}
                             src={item.strMealThumb}
                             alt={item.strMeal}
                             className='w-16 h-16 object-cover rounded mr-4'
@@ -99,7 +112,7 @@ export default function Cart() {
                             }
                             className='bg-gray-200 px-2 py-1 rounded-l'
                           >
-                            -
+                            –
                           </button>
                           <span className='bg-gray-100 px-4 py-1'>
                             {item.quantity}
@@ -134,9 +147,9 @@ export default function Cart() {
               </table>
             </div>
 
-            {/* Mobile view - card layout */}
-            <div className='md:hidden space-y-4'>
-              {items.map((item) => (
+            {/* Mobile view */}
+            <div className='md:hidden space-y-4 mb-6'>
+              {paginatedItems.map((item) => (
                 <div
                   key={item.idMeal}
                   className='bg-white p-4 rounded-lg shadow-md'
@@ -168,7 +181,7 @@ export default function Cart() {
                         }
                         className='bg-gray-200 px-3 py-1 rounded-l'
                       >
-                        -
+                        –
                       </button>
                       <span className='bg-gray-100 px-4 py-1 text-sm'>
                         {item.quantity}
@@ -196,6 +209,7 @@ export default function Cart() {
               ))}
             </div>
 
+            {/* Cart summary */}
             <div className='mt-6 bg-white p-4 rounded-lg shadow-md'>
               <div className='flex justify-between items-center'>
                 <button
@@ -212,6 +226,13 @@ export default function Cart() {
                 </div>
               </div>
             </div>
+
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </>
         )}
       </div>

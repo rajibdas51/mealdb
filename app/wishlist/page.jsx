@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   removeFromWishlist,
@@ -11,11 +12,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import RecipeCard from '@/components/Recipes/RecipeCard';
+import Pagination from '@/components/Pagination';
 
 export default function Wishlist() {
   const { items } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const hasMounted = useHasMounted();
+
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 4;
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+
+  // derive the items for the current page
+  const paginatedItems = items.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   const handleRemoveItem = (idMeal) => {
     dispatch(removeFromWishlist(idMeal));
     toast.success('Item removed from wishlist!');
@@ -30,12 +44,11 @@ export default function Wishlist() {
     dispatch(clearWishlist());
   };
 
-  if (!hasMounted) {
-    return null; // Prevent rendering until mounted
-  }
+  if (!hasMounted) return null;
+
   return (
     <div className='bg-gray-50 min-h-screen'>
-      <div className='container mx-auto px-4 py-8 pt-28'>
+      <div className='container mx-auto px-4 py-8 pt-10'>
         <h1 className='text-2xl font-bold mb-6'>Your Wishlist</h1>
 
         {items.length === 0 ? (
@@ -50,16 +63,16 @@ export default function Wishlist() {
           </div>
         ) : (
           <>
-            {/* Desktop view - grid layout */}
-            <div className='hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6'>
-              {items.map((item) => (
+            {/* Desktop view */}
+            <div className='hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6'>
+              {paginatedItems.map((item) => (
                 <RecipeCard recipe={item} key={item.idMeal} />
               ))}
             </div>
 
-            {/* Mobile view - card layout */}
+            {/* Mobile view */}
             <div className='md:hidden space-y-4 mb-6'>
-              {items.map((item) => (
+              {paginatedItems.map((item) => (
                 <div
                   key={item.idMeal}
                   className='bg-white p-4 rounded-lg shadow-md'
@@ -87,6 +100,7 @@ export default function Wishlist() {
                       onClick={() => handleRemoveItem(item.idMeal)}
                       className='text-red-600 hover:text-red-800 text-sm flex items-center'
                     >
+                      {/* X icon */}
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='16'
@@ -101,7 +115,7 @@ export default function Wishlist() {
                     </button>
                     <button
                       onClick={() => handleAddToCart(item)}
-                      className='bg-yellow-400 text-black rounded hover:bg-yellow-500 px-3 py-1  text-sm'
+                      className='bg-yellow-400 text-black rounded hover:bg-yellow-500 px-3 py-1 text-sm'
                     >
                       Add to Cart
                     </button>
@@ -110,11 +124,13 @@ export default function Wishlist() {
               ))}
             </div>
 
-            <div className='flex justify-between items-center'>
+            {/* Clear & Cart buttons */}
+            <div className='flex justify-between items-center mb-6'>
               <button
                 onClick={handleClearWishlist}
                 className='text-red-600 hover:text-red-800 flex items-center'
               >
+                {/* Trash icon */}
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='16'
@@ -123,7 +139,7 @@ export default function Wishlist() {
                   viewBox='0 0 16 16'
                   className='mr-1'
                 >
-                  <path d='M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z' />
+                  <path d='M2.5 1a1 1 0 0 0-1 1v1...' />
                 </svg>
                 Clear Wishlist
               </button>
@@ -134,6 +150,13 @@ export default function Wishlist() {
                 View Cart
               </Link>
             </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </>
         )}
       </div>
