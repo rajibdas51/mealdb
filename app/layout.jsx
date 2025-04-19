@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 // import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TanstackProvider from '@/providers/TanstackProvider';
 import ReduxProvider from '@/providers/ReduxProvider';
-
+import { ToastContainer } from 'react-toastify';
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
@@ -32,6 +32,7 @@ export default function RootLayout({ children }) {
           <TanstackProvider>
             <Navbar />
             {children}
+            <ToastContainer />
           </TanstackProvider>
         </ReduxProvider>
       </body>

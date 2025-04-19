@@ -20,13 +20,13 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart(state, action) {
-      const existingItem = state.items.fin(
+      const existingItem = state.items.find(
         (item) => item.idMeal === action.payload.idMeal
       );
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.item.push({ ...action.payload, quantity: 1 });
+        state.items.push({ ...action.payload, quantity: 1 });
       }
       // Save cart to local storage
       localStorage.setItem('cart', JSON.stringify(state.items));
