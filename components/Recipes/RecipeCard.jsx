@@ -1,5 +1,6 @@
+'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '../../app/store/slices/cartSlice';
@@ -13,11 +14,15 @@ const RecipeCard = ({ recipe, handleDetailsOpen }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
-
+  const [isMounted, setIsMounted] = React.useState(false);
   const isInCart = cartItems.some((item) => item.idMeal === recipe.idMeal);
   const isInWishlist = wishlistItems.some(
     (item) => item.idMeal === recipe.idMeal
   );
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCartToggle = (e) => {
     e.stopPropagation(); // Prevent card click event
@@ -40,7 +45,9 @@ const RecipeCard = ({ recipe, handleDetailsOpen }) => {
       toast.success('Recipe added to wishlist successfully!');
     }
   };
-
+  if (!isMounted) {
+    return null; // Prevent rendering until mounted
+  }
   return (
     <div
       onClick={() => handleDetailsOpen(recipe?.idMeal)}

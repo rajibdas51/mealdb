@@ -1,25 +1,33 @@
 'use client';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../app/store/slices/authSlice';
 import AuthModal from '../components/auth/AuthModal';
 import { usePathname } from 'next/navigation';
+import { FaCircleUser } from 'react-icons/fa6';
 
 const Navbar = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login');
+  const [isMounted, setIsMounted] = useState(false); // Added state to track mounting
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const path = usePathname();
   const isHomePage = path === '/';
+
   // Calculate total items in cart
   const cartItemsCount = items.reduce(
     (total, item) => total + item.quantity,
     0
   );
+
+  // Ensure the component is mounted before rendering client-specific elements
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const openLoginModal = () => {
     setAuthModalMode('login');
@@ -35,6 +43,9 @@ const Navbar = () => {
     dispatch(logout());
   };
 
+  if (!isMounted) {
+    return null; // Prevent rendering until mounted
+  }
   return (
     <>
       <nav
@@ -103,14 +114,15 @@ const Navbar = () => {
                       className='relative block md:px-4 transition hover:text-yellow-700'
                     >
                       <span>Cart</span>
-                      {cartItemsCount > 0 && (
-                        <span className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
-                          {cartItemsCount}
-                        </span>
-                      )}
+                      {isMounted &&
+                        cartItemsCount > 0 && ( // Render badge only after mounting
+                          <span className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
+                            {cartItemsCount}
+                          </span>
+                        )}
                     </Link>
                   </li>
-                  {isAuthenticated && (
+                  {isMounted && isAuthenticated && (
                     <li>
                       <Link
                         href='/wishlist'
@@ -128,10 +140,13 @@ const Navbar = () => {
                   <div className='relative group'>
                     <button
                       type='button'
-                      className='w-full py-3 px-6 text-center rounded-full transition active:bg-yellow-200 focus:bg-yellow-100 sm:w-max'
+                      className='w-full py-3 px-6 text-center rounded-full flex transition active:bg-yellow-200 focus:bg-yellow-100 sm:w-max justify-center items-center'
                     >
                       <span className='block text-yellow-800 font-semibold text-sm'>
                         Welcome, {user.name}
+                      </span>
+                      <span className='block ml-2 text-yellow-900'>
+                        <FaCircleUser className='h-6 w-6' />
                       </span>
                     </button>
                     <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block'>

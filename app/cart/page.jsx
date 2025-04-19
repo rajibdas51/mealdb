@@ -9,11 +9,12 @@ import {
 
 import Link from 'next/link';
 import Image from 'next/image';
+import useHasMounted from '@/hooks/useHasMounted';
 
 export default function Cart() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-
+  const hasMounted = useHasMounted();
   const handleRemoveItem = (idMeal) => {
     dispatch(removeFromCart(idMeal));
   };
@@ -32,6 +33,9 @@ export default function Cart() {
     .reduce((total, item) => total + 10 * item.quantity, 0)
     .toFixed(2);
 
+  if (!hasMounted) {
+    return null; // Prevent rendering until mounted
+  }
   return (
     <div className='bg-gray-50 min-h-screen'>
       <div className='container mx-auto px-4 py-8 pt-28'>
@@ -42,7 +46,7 @@ export default function Cart() {
             <p className='text-gray-600 mb-4'>Your cart is empty</p>
             <Link
               href='/all-recipes'
-              className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700'
+              className='bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500'
             >
               Browse Recipes
             </Link>
