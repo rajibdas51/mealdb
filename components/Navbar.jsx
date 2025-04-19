@@ -24,7 +24,6 @@ const Navbar = () => {
     0
   );
 
-  // Ensure the component is mounted before rendering client-specific elements
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -44,14 +43,14 @@ const Navbar = () => {
   };
 
   if (!isMounted) {
-    return null; // Prevent rendering until mounted
+    return null;
   }
   return (
     <>
       <nav
         className={`${
-          !isHomePage ? 'border-b-2' : ''
-        } fixed z-50 w-full bg-white md:absolute md:bg-transparent `}
+          !isHomePage ? 'border-b-2 ' : 'absolute'
+        }   w-full bg-white  md:bg-transparent `}
       >
         <div className='container m-auto px-2 md:px-12 lg:px-7'>
           <div className='flex flex-wrap items-center justify-between py-3 gap-6 md:py-4 md:gap-0'>
@@ -114,23 +113,32 @@ const Navbar = () => {
                       className='relative block md:px-4 transition hover:text-yellow-700'
                     >
                       <span>Cart</span>
-                      {isMounted &&
-                        cartItemsCount > 0 && ( // Render badge only after mounting
-                          <span className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
-                            {cartItemsCount}
-                          </span>
-                        )}
+                      {isMounted && cartItemsCount > 0 && (
+                        <span className='absolute -top-[10px] -right-[4px] bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
+                          {cartItemsCount}
+                        </span>
+                      )}
                     </Link>
                   </li>
                   {isMounted && isAuthenticated && (
-                    <li>
-                      <Link
-                        href='/wishlist'
-                        className='block md:px-4 transition hover:text-yellow-700'
-                      >
-                        <span>Wishlist</span>
-                      </Link>
-                    </li>
+                    <>
+                      <li>
+                        <Link
+                          href='/wishlist'
+                          className='block md:px-4 transition hover:text-yellow-700'
+                        >
+                          <span>Wishlist</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href='/submit-recipe'
+                          className='block md:px-4 transition hover:text-yellow-700'
+                        >
+                          <span>Submit Recipe</span>
+                        </Link>
+                      </li>
+                    </>
                   )}
                 </ul>
               </div>
@@ -149,14 +157,7 @@ const Navbar = () => {
                         <FaCircleUser className='h-6 w-6' />
                       </span>
                     </button>
-                    <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block'>
-                      <Link
-                        href='/profile'
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100'
-                      >
-                        Profile
-                      </Link>
-
+                    <div className='absolute right-0 mt-[4px] w-48 bg-white rounded-md shadow-lg py- z-50 hidden group-hover:block'>
                       <button
                         onClick={handleLogout}
                         className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100'

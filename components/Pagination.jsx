@@ -58,7 +58,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     }
   };
 
-  // Don't render pagination if only one page
   if (totalPages <= 1) return null;
 
   return (
